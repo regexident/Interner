@@ -3,24 +3,24 @@ import XCTest
 
 final class ConcurrentInternerTests: XCTestCase {
     func testIntern() {
-        typealias Key = Int
-        typealias KeyInterner = ConcurrentInterner<Interner<Key>>
+        typealias Object = Int
+        typealias ObjectInterner = ConcurrentInterner<Interner<Object>>
 
-        let interner = KeyInterner(interner: .init(cachingLookup: true))
+        let interner = ObjectInterner(interner: .init(cachingLookup: true))
 
-        let numberOfKeys: Int = 100
-        let duplicatesPerKey: Int = 100
+        let numberOfObjects: Int = 100
+        let duplicatesPerObject: Int = 100
 
-        let keys: [Key] = (0..<numberOfKeys).map { _ in
-            Key.random(in: Key.min..<Key.max)
+        let objects: [Object] = (0..<numberOfObjects).map { _ in
+            Object.random(in: Object.min..<Object.max)
         }
 
-        DispatchQueue.concurrentPerform(iterations: keys.count * duplicatesPerKey) { index in
-            let key = keys[index % keys.count]
-            let _ = interner.interned(key)
+        DispatchQueue.concurrentPerform(iterations: objects.count * duplicatesPerObject) { index in
+            let object = objects[index % objects.count]
+            let _ = interner.interned(object)
         }
 
-        XCTAssertEqual(interner.count, keys.count)
+        XCTAssertEqual(interner.count, objects.count)
     }
 
     static var allTests = [

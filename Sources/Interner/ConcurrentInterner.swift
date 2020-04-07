@@ -24,7 +24,7 @@ extension ConcurrentInterner: InternerProtocol
 where
     Interner: InternerProtocol
 {
-    public typealias Key = Interner.Key
+    public typealias Object = Interner.Object
     public typealias Identifier = Interner.Identifier
 
     public var count: Int {
@@ -39,13 +39,13 @@ where
         }
     }
 
-    public func interned(_ key: Key) -> Symbol {
+    public func interned(_ object: Object) -> Symbol {
         self.queue.sync(flags: .barrier) {
-            self.interner.interned(key)
+            self.interner.interned(object)
         }
     }
 
-    public func lookup(_ symbol: Symbol) -> Key? {
+    public func lookup(_ symbol: Symbol) -> Object? {
         self.queue.sync {
             self.interner.lookup(symbol)
         }

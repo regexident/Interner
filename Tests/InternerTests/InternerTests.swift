@@ -3,12 +3,12 @@ import XCTest
 
 final class InternerTests: XCTestCase {
     func testIntern() {
-        typealias Key = Int
-        typealias KeyInterner = Interner<Key>
-        typealias Symbol = KeyInterner.Symbol
+        typealias Object = Int
+        typealias ObjectInterner = Interner<Object>
+        typealias Symbol = ObjectInterner.Symbol
 
-        let uncachedInterner = KeyInterner(cachingLookup: false)
-        let cachedInterner = KeyInterner(cachingLookup: true)
+        let uncachedInterner = ObjectInterner(cachingLookup: false)
+        let cachedInterner = ObjectInterner(cachingLookup: true)
 
         XCTAssertEqual(uncachedInterner.count, 0)
         XCTAssertEqual(cachedInterner.count, 0)
@@ -16,35 +16,35 @@ final class InternerTests: XCTestCase {
         XCTAssertTrue(uncachedInterner.isEmpty)
         XCTAssertTrue(cachedInterner.isEmpty)
 
-        let numberOfKeys: Int = 100
+        let numberOfObjects: Int = 100
 
-        let keys: [Key] = (0..<numberOfKeys).map { _ in
-            Key.random(in: Key.min..<Key.max)
+        let objects: [Object] = (0..<numberOfObjects).map { _ in
+            Object.random(in: Object.min..<Object.max)
         }
 
-        let symbols: [Symbol] = keys.enumerated().map { index, _ in
+        let symbols: [Symbol] = objects.enumerated().map { index, _ in
             Symbol(index)
         }
 
-        assert(keys.count == symbols.count)
+        assert(objects.count == symbols.count)
 
-        // Add keys to interner:
-        for (key, expected) in zip(keys, symbols) {
-            XCTAssertEqual(uncachedInterner.interned(key), expected)
-            XCTAssertEqual(cachedInterner.interned(key), expected)
+        // Add objects to interner:
+        for (object, expected) in zip(objects, symbols) {
+            XCTAssertEqual(uncachedInterner.interned(object), expected)
+            XCTAssertEqual(cachedInterner.interned(object), expected)
         }
 
-        XCTAssertEqual(uncachedInterner.count, keys.count)
-        XCTAssertEqual(cachedInterner.count, keys.count)
+        XCTAssertEqual(uncachedInterner.count, objects.count)
+        XCTAssertEqual(cachedInterner.count, objects.count)
 
-        // Add keys a second time and check for idempotence:
-        for (symbol, expected) in zip(symbols, keys) {
+        // Add objects a second time and check for idempotence:
+        for (symbol, expected) in zip(symbols, objects) {
             XCTAssertEqual(uncachedInterner.lookup(symbol), expected)
             XCTAssertEqual(cachedInterner.lookup(symbol), expected)
         }
 
-        XCTAssertEqual(uncachedInterner.count, keys.count)
-        XCTAssertEqual(cachedInterner.count, keys.count)
+        XCTAssertEqual(uncachedInterner.count, objects.count)
+        XCTAssertEqual(cachedInterner.count, objects.count)
     }
 
     static var allTests = [

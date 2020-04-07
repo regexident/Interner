@@ -2,21 +2,21 @@ public final class Interner<T>
 where
     T: Hashable
 {
-    public typealias Key = T
+    public typealias Object = T
     public typealias Identifier = Int
 
-    private var dictionary: [Key: Symbol]
-    private var array: [Key]?
+    private var dictionary: [Object: Symbol]
+    private var array: [Object]?
 
     /// Creates an interner.
     ///
     /// Use `.init(cachingLookup: false)` if you do not need to reverse-lookup symbols once they have been symbol.
     ///
-    /// Otherwise use `.init(cachingLookup: true)`, but note that this forces every key to be stored twice.
+    /// Otherwise use `.init(cachingLookup: true)`, but note that this forces every object to be stored twice.
     ///
     /// - Parameters:
     ///   - cachingLookup: `true` if the interner should keep a separate array
-    ///     for reverse key lookup, otherwise `false`.
+    ///     for reverse object lookup, otherwise `false`.
     public required init(cachingLookup: Bool) {
         self.dictionary = [:]
         self.array = cachingLookup ? [] : nil
@@ -32,28 +32,28 @@ extension Interner: InternerProtocol {
         self.dictionary.isEmpty
     }
 
-    public func interned(_ key: Key) -> Symbol {
-        if let symbol = self.dictionary[key] {
+    public func interned(_ object: Object) -> Symbol {
+        if let symbol = self.dictionary[object] {
             return symbol
         }
 
         let index = self.dictionary.count
         let symbol = Symbol(index)
         
-        self.dictionary[key] = symbol
-        self.array?.append(key)
+        self.dictionary[object] = symbol
+        self.array?.append(object)
 
-//        assert(self.interned(key) == symbol)
-//        assert(self.lookup(symbol) == key)
+//        assert(self.interned(object) == symbol)
+//        assert(self.lookup(symbol) == object)
 
         return symbol
     }
 
-    public func intern(_ key: Key) {
-        let _ = self.interned(key)
+    public func intern(_ object: Object) {
+        let _ = self.interned(object)
     }
 
-    public func lookup(_ symbol: Symbol) -> Key? {
+    public func lookup(_ symbol: Symbol) -> Object? {
         guard let array = self.array else {
             // Fall back to expensive linear-search lookup:
             return self.expensiveLinearLookup(symbol)
@@ -68,12 +68,12 @@ extension Interner: InternerProtocol {
         return array[index]
     }
 
-    private func expensiveLinearLookup(_ symbol: Symbol) -> Key? {
-        let keyAndSymbolOrNil = self.dictionary.first { key, value in
+    private func expensiveLinearLookup(_ symbol: Symbol) -> Object? {
+        let objectAndSymbolOrNil = self.dictionary.first { key, value in
             value == symbol
         }
 
-        return keyAndSymbolOrNil?.key
+        return objectAndSymbolOrNil?.key
     }
 
     public func reserveCapacity(_ minimumCapacity: Int) {
@@ -87,7 +87,7 @@ extension Interner: InternerProtocol {
 }
 
 extension Interner: Sequence {
-    public typealias Element = (key: Key, value: Symbol)
+    public typealias Element = (key: Object, value: Symbol)
     public typealias Iterator = AnyIterator<Element>
 
     public func makeIterator() -> Iterator {
