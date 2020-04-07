@@ -1,10 +1,10 @@
 import XCTest
 @testable import Interner
 
-final class ConcurrentInternerTests: XCTestCase {
+final class ThreadsafeInternerTests: XCTestCase {
     func testIntern() {
         typealias Object = Int
-        typealias ObjectInterner = ConcurrentInterner<Interner<Object>>
+        typealias ObjectInterner = ThreadsafeInterner<Interner<Object>>
 
         let interner = ObjectInterner(interner: .init(cachingLookup: true))
 

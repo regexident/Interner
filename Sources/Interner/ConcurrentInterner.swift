@@ -1,13 +1,13 @@
 import Foundation
 
-public final class ConcurrentInterner<Interner>
+public final class ThreadsafeInterner<Interner>
 where
     Interner: InternerProtocol
 {
     private let interner: Interner
 
     private let queue: DispatchQueue = .init(
-        label: String(describing: ConcurrentInterner.self),
+        label: String(describing: ThreadsafeInterner.self),
         attributes: .concurrent
     )
 
@@ -20,7 +20,7 @@ where
     }
 }
 
-extension ConcurrentInterner: InternerProtocol
+extension ThreadsafeInterner: InternerProtocol
 where
     Interner: InternerProtocol
 {
@@ -64,7 +64,7 @@ where
     }
 }
 
-extension ConcurrentInterner: Sequence
+extension ThreadsafeInterner: Sequence
 where
     Interner: Sequence
 {
