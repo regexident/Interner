@@ -29,7 +29,7 @@ where
     ID: CustomDebugStringConvertible
 {
     public var debugDescription: String {
-        let id = self.id.debugDescription
+        let id = String(reflecting: self.id)
         return "Symbol(\(id))"
     }
 }

@@ -3,9 +3,7 @@
 /// These symbols allow constant time comparisons and look-ups to the underlying symbol objects.
 public protocol InternerProtocol: AnyObject {
     associatedtype Object
-    associatedtype Identifier
-
-    typealias Symbol = GenericSymbol<Identifier>
+    associatedtype Symbol
 
     /// Returns the number of unique symbols.
     var count: Int { get }

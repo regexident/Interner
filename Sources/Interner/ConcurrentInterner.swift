@@ -25,7 +25,7 @@ where
     Interner: InternerProtocol
 {
     public typealias Object = Interner.Object
-    public typealias Identifier = Interner.Identifier
+    public typealias Symbol = Interner.Symbol
 
     public var count: Int {
         self.queue.sync {

@@ -3,7 +3,7 @@ where
     T: Hashable
 {
     public typealias Object = T
-    public typealias Identifier = Int
+    public typealias Symbol = GenericSymbol<Int>
 
     private var dictionary: [Object: Symbol]
     private var array: [Object]?
