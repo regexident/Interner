@@ -43,8 +43,8 @@ extension Interner: InternerProtocol {
         self.dictionary[object] = symbol
         self.array?.append(object)
 
-//        assert(self.interned(object) == symbol)
-//        assert(self.lookup(symbol) == object)
+        assert(self.interned(object) == symbol)
+        assert(self.lookup(symbol) == object)
 
         return symbol
     }
