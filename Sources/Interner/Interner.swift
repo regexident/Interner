@@ -1,3 +1,6 @@
+/// A general purpose object interner.
+///
+/// Important: For multi-threaded use-cases you should use `ThreadsafeInterner<Interner<T>>` instead.
 public final class Interner<T>
 where
     T: Hashable

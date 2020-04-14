@@ -1,5 +1,8 @@
 import Foundation
 
+/// A general purpose thread-safe object interner.
+///
+/// Important: For single-threaded use-cases you should use `ThreadsafeInterner<Interner<T>>` instead.
 public final class ThreadsafeInterner<Interner>
 where
     Interner: InternerProtocol
