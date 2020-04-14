@@ -3,14 +3,15 @@ import XCTest
 
 final class ThreadsafeInternerTests: XCTestCase {
     func testIntern() {
-        typealias Object = Int
-        typealias ObjectInterner = ThreadsafeInterner<Interner<Object>>
+        typealias Extern = Int
+        typealias Intern = UInt8
+        typealias ObjectInterner = ThreadsafeInterner<Interner<Extern, Intern>>
 
         let interner = ObjectInterner(interner: .init(cachingLookup: true))
 
         let numberOfObjects: Int = 100
-        let objects: [Object] = (0..<numberOfObjects).map { _ in
-            Object.random(in: Object.min..<Object.max)
+        let objects: [Extern] = (0..<numberOfObjects).map { _ in
+            .random(in: (.min)...(.max))
         }
 
         let numberOfThreads: Int = 100

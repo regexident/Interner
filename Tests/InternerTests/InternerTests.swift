@@ -3,8 +3,9 @@ import XCTest
 
 final class InternerTests: XCTestCase {
     func testIntern() {
-        typealias Object = Int
-        typealias ObjectInterner = Interner<Object>
+        typealias Extern = Int
+        typealias Intern = UInt8
+        typealias ObjectInterner = Interner<Extern, Intern>
         typealias Symbol = ObjectInterner.Symbol
 
         let uncachedInterner = ObjectInterner(cachingLookup: false)
@@ -18,12 +19,12 @@ final class InternerTests: XCTestCase {
 
         let numberOfObjects: Int = 100
 
-        let objects: [Object] = (0..<numberOfObjects).map { _ in
-            Object.random(in: Object.min..<Object.max)
+        let objects: [Extern] = (0..<numberOfObjects).map { _ in
+            .random(in: (.min)...(.max))
         }
 
         let symbols: [Symbol] = objects.enumerated().map { index, _ in
-            Symbol(index)
+            Symbol(UInt8(index))
         }
 
         assert(objects.count == symbols.count)

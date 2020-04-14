@@ -1,12 +1,13 @@
 /// A general purpose object interner.
 ///
 /// Important: For multi-threaded use-cases you should use `ThreadsafeInterner<Interner<T>>` instead.
-public final class Interner<T>
+public final class Interner<Extern, Intern>
 where
-    T: Hashable
+    Extern: Hashable,
+    Intern: FixedWidthInteger & BinaryInteger & UnsignedInteger
 {
-    public typealias Object = T
-    public typealias Symbol = GenericSymbol<Int>
+    public typealias Object = Extern
+    public typealias Symbol = GenericSymbol<Intern>
 
     private var dictionary: [Object: Symbol]
     private var array: [Object]?
@@ -51,7 +52,10 @@ extension Interner: InternerProtocol {
         }
 
         let index = self.dictionary.count
-        let symbol = Symbol(index)
+        guard let rawValue = Intern(exactly: index) else {
+            fatalError("Out of bounds: \(index) not in \(Intern.min)...\(Intern.max)")
+        }
+        let symbol = Symbol(rawValue)
         
         self.dictionary[object] = symbol
         self.array?.append(object)
@@ -72,7 +76,10 @@ extension Interner: InternerProtocol {
             return self.expensiveLinearLookup(symbol)
         }
 
-        let index = symbol.rawValue
+        let rawValue = symbol.rawValue
+        guard let index = Int(exactly: rawValue) else {
+            fatalError("Out of bounds: \(rawValue) not in \(Int.min)...\(Int.max)")
+        }
 
         guard index < array.count else {
             return nil
