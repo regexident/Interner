@@ -27,6 +27,12 @@ let package = Package(
             ]
         ),
         .testTarget(
+            name: "InternerBenchmarks",
+            dependencies: [
+                "Interner",
+            ]
+        ),
+        .testTarget(
             name: "InternerTests",
             dependencies: [
                 "Interner",
