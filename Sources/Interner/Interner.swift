@@ -26,6 +26,16 @@ where
     }
 }
 
+extension Interner {
+    private func expensiveLinearLookup(_ symbol: Symbol) -> Object? {
+        let objectAndSymbolOrNil = self.dictionary.first { key, value in
+            value == symbol
+        }
+
+        return objectAndSymbolOrNil?.key
+    }
+}
+
 extension Interner: InternerProtocol {
     public var count: Int {
         self.dictionary.count
@@ -62,21 +72,13 @@ extension Interner: InternerProtocol {
             return self.expensiveLinearLookup(symbol)
         }
 
-        let index = symbol.id
+        let index = symbol.rawValue
 
         guard index < array.count else {
             return nil
         }
 
         return array[index]
-    }
-
-    private func expensiveLinearLookup(_ symbol: Symbol) -> Object? {
-        let objectAndSymbolOrNil = self.dictionary.first { key, value in
-            value == symbol
-        }
-
-        return objectAndSymbolOrNil?.key
     }
 
     public func reserveCapacity(_ minimumCapacity: Int) {
