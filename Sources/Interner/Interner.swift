@@ -10,24 +10,45 @@ where
     Extern: Hashable,
     Intern: FixedWidthInteger & BinaryInteger & UnsignedInteger
 {
+    /// The efficiency mode
+    public enum EfficiencyMode {
+        /// Optimized for time (i.e. CPU) efficiency
+        case time
+        /// Optimized for space (i.e. RAM) efficiency
+        case space
+    }
+
     public typealias Object = Extern
     public typealias Symbol = GenericSymbol<Intern>
 
     private var dictionary: [Object: Symbol]
     private var array: [Object]?
 
-    /// Creates an interner.
+    /// Creates an interner for the provided efficiency-mode.
     ///
-    /// Use `.init(cachingLookup: false)` if you do not need to reverse-lookup symbols once they have been symbol.
+    /// ## Efficiency modes:
     ///
-    /// Otherwise use `.init(cachingLookup: true)`, but note that this forces every object to be stored twice.
+    /// - `.time`: This mode causes the interner to store each object twice,
+    ///   which allows for `O(1)` symbol-to-object reverse-lookups.
+    ///   (The upper-bound memory-overhead per element compared to `.space` is `2x`,
+    ///   as the objects have to be stored twice.)
+    ///
+    /// - `.space`: This mode causes the interner to store each object only once,
+    ///   which halfs the expected memory-usage compared to `.time`,
+    ///   yet in turn leads to `O(N)` symbol-to-object reverse-lookups.
+    ///   (The upper-bound memory-overhead per lookup compared to `.time` is `Nx`,
+    ///   with `N` being the number of objects.)
     ///
     /// - Parameters:
-    ///   - cachingLookup: `true` if the interner should keep a separate array
-    ///     for reverse object lookup, otherwise `false`.
-    public required init(cachingLookup: Bool) {
+    ///   - efficiencyMode: The efficienty mode to use. The default is `.time`.
+    public required init(efficientFor efficiencyMode: EfficiencyMode = .time) {
         self.dictionary = [:]
-        self.array = cachingLookup ? [] : nil
+        switch efficiencyMode {
+        case .time:
+            self.array = []
+        case .space:
+            self.array = nil
+        }
     }
 }
 
