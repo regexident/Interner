@@ -8,14 +8,14 @@ final class InternerTests: XCTestCase {
         typealias ObjectInterner = Interner<Extern, Intern>
         typealias Symbol = ObjectInterner.Symbol
 
-        let uncachedInterner = ObjectInterner(cachingLookup: false)
-        let cachedInterner = ObjectInterner(cachingLookup: true)
+        let internerEfficientForSpace = ObjectInterner(efficientFor: .space)
+        let internerEfficientForTime = ObjectInterner(efficientFor: .time)
 
-        XCTAssertEqual(uncachedInterner.count, 0)
-        XCTAssertEqual(cachedInterner.count, 0)
+        XCTAssertEqual(internerEfficientForSpace.count, 0)
+        XCTAssertEqual(internerEfficientForTime.count, 0)
 
-        XCTAssertTrue(uncachedInterner.isEmpty)
-        XCTAssertTrue(cachedInterner.isEmpty)
+        XCTAssertTrue(internerEfficientForSpace.isEmpty)
+        XCTAssertTrue(internerEfficientForTime.isEmpty)
 
         let numberOfObjects: Int = 100
 
@@ -31,21 +31,21 @@ final class InternerTests: XCTestCase {
 
         // Add objects to interner:
         for (object, expected) in zip(objects, symbols) {
-            XCTAssertEqual(uncachedInterner.interned(object), expected)
-            XCTAssertEqual(cachedInterner.interned(object), expected)
+            XCTAssertEqual(internerEfficientForSpace.interned(object), expected)
+            XCTAssertEqual(internerEfficientForTime.interned(object), expected)
         }
 
-        XCTAssertEqual(uncachedInterner.count, objects.count)
-        XCTAssertEqual(cachedInterner.count, objects.count)
+        XCTAssertEqual(internerEfficientForSpace.count, objects.count)
+        XCTAssertEqual(internerEfficientForTime.count, objects.count)
 
         // Add objects a second time and check for idempotence:
         for (symbol, expected) in zip(symbols, objects) {
-            XCTAssertEqual(uncachedInterner.lookup(symbol), expected)
-            XCTAssertEqual(cachedInterner.lookup(symbol), expected)
+            XCTAssertEqual(internerEfficientForSpace.lookup(symbol), expected)
+            XCTAssertEqual(internerEfficientForTime.lookup(symbol), expected)
         }
 
-        XCTAssertEqual(uncachedInterner.count, objects.count)
-        XCTAssertEqual(cachedInterner.count, objects.count)
+        XCTAssertEqual(internerEfficientForSpace.count, objects.count)
+        XCTAssertEqual(internerEfficientForTime.count, objects.count)
     }
 
     static var allTests = [
