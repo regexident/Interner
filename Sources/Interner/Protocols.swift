@@ -49,6 +49,10 @@ extension InternerProtocol {
     /// - Parameters:
     ///   - symbol: The symbol to look up the corresponding object for.
     public func lookupUnchecked(_ symbol: Symbol) -> Object {
-        self.lookup(symbol)!
+        guard let object = self.lookup(symbol) else {
+            fatalError("Failed to look up symbol '\(symbol)'")
+        }
+
+        return object
     }
 }
