@@ -1,35 +1,33 @@
 /// A thin shim around base identifiers.
 ///
 /// Only interners can create instances of this type.
-public struct GenericSymbol<ID> {
-    public let id: ID
+public struct GenericSymbol<RawValue> {
+    internal let rawValue: RawValue
 
-    internal init(_ id: ID) {
-        self.id = id
+    internal init(_ rawValue: RawValue) {
+        self.rawValue = rawValue
     }
 }
 
-extension GenericSymbol: Identifiable where ID: Hashable {}
+extension GenericSymbol: Hashable where RawValue: Hashable {}
 
-extension GenericSymbol: Hashable where ID: Hashable {}
-
-extension GenericSymbol: Equatable where ID: Equatable {}
+extension GenericSymbol: Equatable where RawValue: Equatable {}
 
 extension GenericSymbol: CustomStringConvertible
 where
-    ID: CustomStringConvertible
+    RawValue: CustomStringConvertible
 {
     public var description: String {
-        self.id.description
+        self.rawValue.description
     }
 }
 
 extension GenericSymbol: CustomDebugStringConvertible
 where
-    ID: CustomDebugStringConvertible
+    RawValue: CustomDebugStringConvertible
 {
     public var debugDescription: String {
-        let id = String(reflecting: self.id)
-        return "Symbol(\(id))"
+        let rawValue = String(reflecting: self.rawValue)
+        return "Symbol(\(rawValue))"
     }
 }
