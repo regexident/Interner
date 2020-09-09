@@ -11,6 +11,10 @@ public struct GenericSymbol<RawValue> {
     internal init(_ rawValue: RawValue) {
         self.rawValue = rawValue
     }
+
+    public static func unchecked(rawValue: RawValue) -> Self {
+        self.init(rawValue)
+    }
 }
 
 extension GenericSymbol: Hashable where RawValue: Hashable {}
