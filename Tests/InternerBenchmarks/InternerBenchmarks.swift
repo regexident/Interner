@@ -3,7 +3,7 @@ import XCTest
 import Interner
 
 final class InternerBenchmarks: XCTestCase {
-    let numberOfObjectsForInterning: Int = 1_000_000
+    let numberOfObjectsForInterning: Int = 100_000
     let numberOfObjectsForLookup: Int = 10_000
 
     struct Element: Hashable {
