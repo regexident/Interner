@@ -68,6 +68,17 @@ where
     }
 }
 
+extension Interner: Hashable
+where
+    Extern: Hashable,
+    Intern: Hashable
+{
+    public func hash(into hasher: inout Hasher) {
+        self.dictionary.hash(into: &hasher)
+        self.array?.hash(into: &hasher)
+    }
+}
+
 extension Interner {
     private func expensiveLinearLookup(_ symbol: Symbol) -> Object? {
         let objectAndSymbolOrNil = self.dictionary.first { key, value in
