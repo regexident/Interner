@@ -52,6 +52,22 @@ where
     }
 }
 
+extension Interner: Equatable
+where
+    Extern: Equatable,
+    Intern: Equatable
+{
+    public static func == (lhs: Interner<Extern, Intern>, rhs: Interner<Extern, Intern>) -> Bool {
+        guard lhs.dictionary == rhs.dictionary else {
+            return false
+        }
+        guard lhs.array == rhs.array else {
+            return false
+        }
+        return true
+    }
+}
+
 extension Interner {
     private func expensiveLinearLookup(_ symbol: Symbol) -> Object? {
         let objectAndSymbolOrNil = self.dictionary.first { key, value in
