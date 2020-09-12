@@ -79,6 +79,19 @@ where
     }
 }
 
+extension Interner: CustomReflectable {
+    public var customMirror: Mirror {
+        Mirror(
+            self,
+            children: [
+                "dictionary": self.dictionary,
+                "array": self.array as Any,
+            ],
+            displayStyle: .struct
+        )
+    }
+}
+
 extension Interner {
     private func expensiveLinearLookup(_ symbol: Symbol) -> Object? {
         let objectAndSymbolOrNil = self.dictionary.first { key, value in
