@@ -2,12 +2,12 @@ import XCTest
 @testable import Interner
 
 final class InternerTests: XCTestCase {
-    func testIntern() {
-        typealias Extern = Int
-        typealias Intern = UInt8
-        typealias ObjectInterner = Interner<Extern, Intern>
-        typealias Symbol = ObjectInterner.Symbol
+    typealias Extern = Int
+    typealias Intern = UInt8
+    typealias ObjectInterner = Interner<Extern, Intern>
+    typealias Symbol = ObjectInterner.Symbol
 
+    func testIntern() {
         let internerEfficientForSpace = ObjectInterner(efficientFor: .space)
         let internerEfficientForTime = ObjectInterner(efficientFor: .time)
 
@@ -48,7 +48,35 @@ final class InternerTests: XCTestCase {
         XCTAssertEqual(internerEfficientForTime.count, objects.count)
     }
 
+    func testDebugDescription() {
+        let interner = ObjectInterner()
+
+        interner.intern(42)
+
+        XCTAssertEqual(
+            String(reflecting: interner),
+            """
+            Interner.Interner<Swift.Int, Swift.UInt8>(dictionary: [42: 0], array: Optional([42]))
+            """
+        )
+    }
+
+    func testDescription() {
+        let interner = ObjectInterner()
+
+        interner.intern(42)
+
+        XCTAssertEqual(
+            String(describing: interner),
+            """
+            Interner<Int, UInt8>(dictionary: [42: 0], array: Optional([42]))
+            """
+        )
+    }
+
     static var allTests = [
         ("testIntern", testIntern),
+        ("testDebugDescription", testDebugDescription),
+        ("testDescription", testDescription),
     ]
 }
