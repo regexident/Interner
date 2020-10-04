@@ -6,8 +6,9 @@
 ///
 /// These symbols allow constant time comparisons and look-ups to the underlying symbol objects.
 public protocol InternerProtocol: AnyObject {
-    associatedtype Object
-    associatedtype Symbol
+    associatedtype Object: Hashable
+    associatedtype Symbol: Hashable
+    associatedtype Error: InternerErrorProtocol
 
     /// Returns the number of unique symbols.
     var count: Int { get }
@@ -44,13 +45,39 @@ extension InternerProtocol {
     public func intern(_ object: Object) {
         let _ = self.interned(object)
     }
+}
 
-    /// Looks up a object from its symbol, or crashes if not found.
+extension InternerProtocol
+where
+    Object == AnyHashable
+{
+    /// Adds a object to the interner without returning an symbol.
+    /// - Parameters:
+    ///   - object: The object to intern.
+    public func intern<T: Hashable>(_ object: T) {
+        let _ = self.interned(object)
+    }
+
+    /// Returns the corresponding symbol for a object.
+    /// - Parameters:
+    ///   - object: The object to intern.
+    public func interned<T: Hashable>(_ object: T) -> Symbol {
+        self.interned(AnyHashable(object))
+    }
+
+    /// Looks up a object from its symbol, returning it if found, otherwise `nil`, or an error, if an object was found with different type.
     /// - Parameters:
     ///   - symbol: The symbol to look up the corresponding object for.
-    public func lookupUnchecked(_ symbol: Symbol) -> Object {
-        guard let object = self.lookup(symbol) else {
-            fatalError("Failed to look up symbol '\(symbol)'")
+    public func lookup<T: Hashable>(
+        _ symbol: Symbol,
+        as type: T.Type
+    ) throws -> T? {
+        guard let anyHashable = self.lookup(symbol) else {
+            return nil
+        }
+
+        guard let object = anyHashable.base as? T else {
+            throw Error.invalidType
         }
 
         return object
