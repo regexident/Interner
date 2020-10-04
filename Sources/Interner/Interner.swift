@@ -41,7 +41,9 @@ where
     ///
     /// - Parameters:
     ///   - efficiencyMode: The efficienty mode to use. The default is `.time`.
-    public required init(efficientFor efficiencyMode: EfficiencyMode = .time) {
+    public required init(
+        efficientFor efficiencyMode: EfficiencyMode = .time
+    ) {
         self.dictionary = [:]
         switch efficiencyMode {
         case .time:

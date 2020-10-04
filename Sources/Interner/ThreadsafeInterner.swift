@@ -7,11 +7,14 @@ import Foundation
 /// A general purpose thread-safe object interner.
 ///
 /// Important: For single-threaded use-cases you should use `ThreadsafeInterner<Interner<T>>` instead.
-public final class ThreadsafeInterner<Interner>
+public final class ThreadsafeInterner<Extern, Intern>
 where
-    Interner: InternerProtocol
+    Extern: Hashable,
+    Intern: FixedWidthInteger & BinaryInteger & UnsignedInteger
 {
-    private let interner: Interner
+    public typealias Base = Interner<Extern, Intern>
+
+    private let base: Interner<Extern, Intern>
 
     private let queue: DispatchQueue = .init(
         label: String(describing: ThreadsafeInterner.self),
@@ -22,65 +25,69 @@ where
     /// non-thread-safe interner with a read-efficient dispatch queue
     /// with readers–writer lock semantics:
     /// - Parameter interner: A non-thread-safe interner.
-    public init(interner: Interner) {
-        self.interner = interner
+    public init(_ base: Base = .init()) {
+        self.base = base
+    }
+
+    public convenience init(
+        efficientFor efficiencyMode: Base.EfficiencyMode = .time
+    ) {
+        self.init(.init(efficientFor: efficiencyMode))
     }
 }
 
 extension ThreadsafeInterner: InternerProtocol
 where
-    Interner: InternerProtocol
+    Extern: Hashable,
+    Intern: FixedWidthInteger & BinaryInteger & UnsignedInteger
 {
-    public typealias Object = Interner.Object
-    public typealias Symbol = Interner.Symbol
+    public typealias Object = Base.Object
+    public typealias Symbol = Base.Symbol
 
     public var count: Int {
         self.queue.sync {
-            self.interner.count
+            self.base.count
         }
     }
 
     public var isEmpty: Bool {
         self.queue.sync {
-            self.interner.isEmpty
+            self.base.isEmpty
         }
     }
 
     public func interned(_ object: Object) -> Symbol {
         self.queue.sync(flags: .barrier) {
-            self.interner.interned(object)
+            self.base.interned(object)
         }
     }
 
     public func lookup(_ symbol: Symbol) -> Object? {
         self.queue.sync {
-            self.interner.lookup(symbol)
+            self.base.lookup(symbol)
         }
     }
 
     public func reserveCapacity(_ minimumCapacity: Int) {
         self.queue.sync(flags: .barrier) {
-            self.interner.reserveCapacity(minimumCapacity)
+            self.base.reserveCapacity(minimumCapacity)
         }
     }
 
     public func removeAll(keepingCapacity keepCapacity: Bool = false) {
         self.queue.sync(flags: .barrier) {
-            self.interner.removeAll(keepingCapacity: keepCapacity)
+            self.base.removeAll(keepingCapacity: keepCapacity)
         }
     }
 }
 
-extension ThreadsafeInterner: Sequence
-where
-    Interner: Sequence
-{
-    public typealias Element = Interner.Element
-    public typealias Iterator = Interner.Iterator
+extension ThreadsafeInterner: Sequence {
+    public typealias Element = Base.Element
+    public typealias Iterator = Base.Iterator
 
     public func makeIterator() -> Iterator {
         self.queue.sync {
-            self.interner.makeIterator()
+            self.base.makeIterator()
         }
     }
 }

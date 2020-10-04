@@ -5,9 +5,9 @@ final class ThreadsafeInternerTests: XCTestCase {
     func testIntern() {
         typealias Extern = Int
         typealias Intern = UInt8
-        typealias ObjectInterner = ThreadsafeInterner<Interner<Extern, Intern>>
+        typealias ObjectInterner = ThreadsafeInterner<Extern, Intern>
 
-        let interner = ObjectInterner(interner: .init(efficientFor: .time))
+        let interner = ObjectInterner(efficientFor: .time)
 
         let numberOfObjects: Int = 100
         let objects: [Extern] = (0..<numberOfObjects).map { _ in
