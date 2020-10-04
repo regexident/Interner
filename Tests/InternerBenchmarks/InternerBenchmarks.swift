@@ -2,6 +2,7 @@ import XCTest
 
 import Interner
 
+@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 final class InternerBenchmarks: XCTestCase {
     let numberOfObjectsForInterning: Int = 100_000
     let numberOfObjectsForLookup: Int = 10_000
@@ -24,7 +25,6 @@ final class InternerBenchmarks: XCTestCase {
         }
     }
 
-    @available(OSX 10.15, *)
     func testBenchmarkInterningEfficientForSpace() {
         typealias Extern = Element
         typealias Intern = UInt32
@@ -46,7 +46,6 @@ final class InternerBenchmarks: XCTestCase {
         }
     }
 
-    @available(OSX 10.15, *)
     func testBenchmarkInterningEfficientForTime() {
         typealias Extern = Element
         typealias Intern = UInt32
@@ -68,7 +67,6 @@ final class InternerBenchmarks: XCTestCase {
         }
     }
 
-    @available(OSX 10.15, *)
     func testBenchmarkLookupInterningEfficientForSpace() {
         typealias Extern = Element
         typealias Intern = UInt32
@@ -97,7 +95,6 @@ final class InternerBenchmarks: XCTestCase {
         }
     }
 
-    @available(OSX 10.15, *)
     func testBenchmarkLookupInterningEfficientForTime() {
         typealias Extern = Element
         typealias Intern = UInt32
@@ -127,15 +124,11 @@ final class InternerBenchmarks: XCTestCase {
     }
 
     static var allTests: [(String, (InternerBenchmarks) -> () -> ())] {
-        if #available(OSX 10.15, *) {
-            return [
-                ("testBenchmarkInterningEfficientForSpace", testBenchmarkInterningEfficientForSpace),
-                ("testBenchmarkInterningEfficientForTime", testBenchmarkInterningEfficientForTime),
-                ("testBenchmarkLookupInterningEfficientForSpace", testBenchmarkLookupInterningEfficientForSpace),
-                ("testBenchmarkLookupInterningEfficientForTime", testBenchmarkLookupInterningEfficientForTime),
-            ]
-        } else {
-            return []
-        }
+        return [
+            ("testBenchmarkInterningEfficientForSpace", testBenchmarkInterningEfficientForSpace),
+            ("testBenchmarkInterningEfficientForTime", testBenchmarkInterningEfficientForTime),
+            ("testBenchmarkLookupInterningEfficientForSpace", testBenchmarkLookupInterningEfficientForSpace),
+            ("testBenchmarkLookupInterningEfficientForTime", testBenchmarkLookupInterningEfficientForTime),
+        ]
     }
 }
