@@ -2,6 +2,9 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+/// Convenience typealias for `GenericSymbol<RawValue>`.
+public typealias Symbol<RawValue> = GenericSymbol<RawValue>
+
 /// A thin shim around base identifiers.
 ///
 /// Only interners can create instances of this type.
