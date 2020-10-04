@@ -43,6 +43,7 @@ where
 {
     public typealias Object = Base.Object
     public typealias Symbol = Base.Symbol
+    public typealias Error = Base.Error
 
     public var count: Int {
         self.queue.sync {

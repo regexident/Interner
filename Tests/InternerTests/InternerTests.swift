@@ -2,14 +2,18 @@ import XCTest
 @testable import Interner
 
 final class InternerTests: XCTestCase {
-    typealias Extern = Int
     typealias Intern = UInt8
-    typealias ObjectInterner = Interner<Extern, Intern>
-    typealias Symbol = ObjectInterner.Symbol
+    typealias Symbol = GenericSymbol<Intern>
 
-    func testIntern() {
-        let internerEfficientForSpace = ObjectInterner(efficientFor: .space)
-        let internerEfficientForTime = ObjectInterner(efficientFor: .time)
+    typealias TypedExtern = Int
+    typealias UntypedExtern = AnyHashable
+
+    typealias TypedInterner = Interner<TypedExtern, Intern>
+    typealias UntypedInterner = Interner<AnyHashable, Intern>
+
+    func testTyped() {
+        let internerEfficientForSpace = TypedInterner(efficientFor: .space)
+        let internerEfficientForTime = TypedInterner(efficientFor: .time)
 
         XCTAssertEqual(internerEfficientForSpace.count, 0)
         XCTAssertEqual(internerEfficientForTime.count, 0)
@@ -19,7 +23,7 @@ final class InternerTests: XCTestCase {
 
         let numberOfObjects: Int = 100
 
-        let objects: [Extern] = (0..<numberOfObjects).map { _ in
+        let objects: [TypedExtern] = (0..<numberOfObjects).map { _ in
             .random(in: (.min)...(.max))
         }
 
@@ -48,8 +52,55 @@ final class InternerTests: XCTestCase {
         XCTAssertEqual(internerEfficientForTime.count, objects.count)
     }
 
+    func testUntyped() {
+        let internerEfficientForSpace = UntypedInterner(efficientFor: .space)
+        let internerEfficientForTime = UntypedInterner(efficientFor: .time)
+
+        XCTAssertEqual(internerEfficientForSpace.count, 0)
+        XCTAssertEqual(internerEfficientForTime.count, 0)
+
+        XCTAssertTrue(internerEfficientForSpace.isEmpty)
+        XCTAssertTrue(internerEfficientForTime.isEmpty)
+
+        let numberOfObjects: Int = 100
+
+        let objects: [UntypedExtern] = (0..<numberOfObjects).map { index in
+            let intValue = Int.random(in: (.min)...(.max))
+
+            if index % 2 == 0 {
+                return AnyHashable(intValue)
+            } else {
+                return AnyHashable("\(intValue)")
+            }
+        }
+
+        let symbols: [Symbol] = objects.enumerated().map { index, _ in
+            Symbol(UInt8(index))
+        }
+
+        assert(objects.count == symbols.count)
+
+        // Add objects to interner:
+        for (object, expected) in zip(objects, symbols) {
+            XCTAssertEqual(internerEfficientForSpace.interned(object), expected)
+            XCTAssertEqual(internerEfficientForTime.interned(object), expected)
+        }
+
+        XCTAssertEqual(internerEfficientForSpace.count, objects.count)
+        XCTAssertEqual(internerEfficientForTime.count, objects.count)
+
+        // Add objects a second time and check for idempotence:
+        for (symbol, expected) in zip(symbols, objects) {
+            XCTAssertEqual(internerEfficientForSpace.lookup(symbol), expected)
+            XCTAssertEqual(internerEfficientForTime.lookup(symbol), expected)
+        }
+
+        XCTAssertEqual(internerEfficientForSpace.count, objects.count)
+        XCTAssertEqual(internerEfficientForTime.count, objects.count)
+    }
+
     func testDebugDescription() {
-        let interner = ObjectInterner()
+        let interner = TypedInterner()
 
         interner.intern(42)
 
@@ -62,7 +113,7 @@ final class InternerTests: XCTestCase {
     }
 
     func testDescription() {
-        let interner = ObjectInterner()
+        let interner = TypedInterner()
 
         interner.intern(42)
 
@@ -75,7 +126,8 @@ final class InternerTests: XCTestCase {
     }
 
     static var allTests = [
-        ("testIntern", testIntern),
+        ("testTyped", testTyped),
+        ("testUntyped", testUntyped),
         ("testDebugDescription", testDebugDescription),
         ("testDescription", testDescription),
     ]

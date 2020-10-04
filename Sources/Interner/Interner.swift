@@ -18,6 +18,11 @@ where
         case space
     }
 
+    public enum Error: InternerErrorProtocol {
+        case notFound
+        case invalidType
+    }
+
     public typealias Object = Extern
     public typealias Symbol = GenericSymbol<Intern>
 
